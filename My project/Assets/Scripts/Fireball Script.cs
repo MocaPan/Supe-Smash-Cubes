@@ -1,13 +1,14 @@
 using UnityEngine;
+using CustomPhysics2D;
 
 public class FireballScript : MonoBehaviour
 {
     public float speed;
-    private Rigidbody2D rb;
+    private MyRigidbody2D rb;
     private Vector2 Direction;
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        rb = GetComponent<MyRigidbody2D>();
     }
 
     void Update()
@@ -22,5 +23,9 @@ public class FireballScript : MonoBehaviour
     public void DestroyFireBall()
     {
         Destroy(gameObject);
+
     }
+
+
 }
+

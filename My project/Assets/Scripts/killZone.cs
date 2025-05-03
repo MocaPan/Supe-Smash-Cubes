@@ -1,32 +1,34 @@
 using UnityEngine;
 using System.Collections;
+using CustomPhysics2D;  // donde tengas MyCollider2D y MyRectangleCollider2D
 
-
-public class KillZone2D : MonoBehaviour
+[RequireComponent(typeof(MyRectangleCollider2D))]
+public class KillZone : MonoBehaviour
 {
+    public AudioSource DeathSound;
+
     public Transform playerSpawnPoint;
-    public float respawnDelay = 2f;
-    private bool isRespawning = false;
-    public AudioSource RespawnSound;
     
+    public float respawnDelay = 1f;
 
+    bool isRespawning;
 
-    private void OnTriggerEnter2D(Collider2D other)
+    // Este método se invoca porque MyRigidbody2D llama a SendMessage("OnMyTriggerEnter", ...)
+    void OnMyTriggerEnter(MyCollider2D other)
     {
-        if (!isRespawning && other.CompareTag("Player"))
-        {
-            RespawnSound.Play();
-            StartCoroutine(RespawnAfterDelay(other.gameObject));
-        }
+        if (isRespawning) return;
+        if (!other.CompareTag("Player")) return;
+        DeathSound.Play();
+        StartCoroutine(RespawnAfterDelay(other.transform));
     }
 
-    private IEnumerator RespawnAfterDelay(GameObject player)
+    IEnumerator RespawnAfterDelay(Transform player)
     {
         isRespawning = true;
-        player.SetActive(false);
+        player.gameObject.SetActive(false);
         yield return new WaitForSeconds(respawnDelay);
-        player.transform.position = playerSpawnPoint.position;
-        player.SetActive(true);
+        player.position = playerSpawnPoint.position;
+        player.gameObject.SetActive(true);
         isRespawning = false;
     }
 }

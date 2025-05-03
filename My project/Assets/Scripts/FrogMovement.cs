@@ -1,9 +1,9 @@
-// FrogMovement.cs
 using UnityEngine;
+using CustomPhysics2D;
 
 public class FrogMovement : MonoBehaviour
 {
-    private Rigidbody2D rb;
+    private MyRigidbody2D rb;      // Tu Rigidbody2D “casero”
     private Animator Animator;
     public GameObject FireballPrefab;
     private float Horizontal;
@@ -14,7 +14,7 @@ public class FrogMovement : MonoBehaviour
 
     private void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        rb = GetComponent<MyRigidbody2D>();
         Animator = GetComponent<Animator>();
     }
 
@@ -22,36 +22,24 @@ public class FrogMovement : MonoBehaviour
     {
         // Movimiento con A/D
         if (Input.GetKey(KeyCode.A))
-        {
             Horizontal = -1.0f * speed;
-        }
         else if (Input.GetKey(KeyCode.D))
-        {
             Horizontal = 1.0f * speed;
-        }
         else
-        {
             Horizontal = 0.0f;
-        }
 
         // Voltear sprite
         if (Horizontal < 0.0f)
-        {
             transform.localScale = new Vector3(-1, 1, 1);
-        }
         else if (Horizontal > 0.0f)
-        {
             transform.localScale = new Vector3(1, 1, 1);
-        }
 
         // Animación de correr
         Animator.SetBool("Running", Horizontal != 0.0f);
 
         // Salto con W
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            Jump();
-        }
+        if (Input.GetKeyDown(KeyCode.W) && Mathf.Abs(rb.linearVelocity.y) < 0.01f)
+            rb.AddForce(Vector2.up * jumpForce);
 
         // Disparo con F
         if (Input.GetKey(KeyCode.F) && Time.time > LastShoot + shootDelay)
@@ -61,36 +49,22 @@ public class FrogMovement : MonoBehaviour
         }
     }
 
-    private void Jump()
-    {
-        if (Mathf.Abs(rb.linearVelocity.y) < 0.01f)
-        {
-            rb.AddForce(Vector2.up * jumpForce);
-        }
-    }
-
     private void Shoot()
     {
-        Vector3 direction;
-        if (transform.localScale.x < 0)
-        {
-            direction = new Vector2(-1, 0);
-        }
-        else
-        {
-            direction = new Vector2(1, 0);
-        }
+        Vector2 dir = transform.localScale.x < 0 ? Vector2.left : Vector2.right;
+        Vector3 spawnPos = transform.position + (Vector3)dir * 0.2f;
 
         GameObject FireBall = Instantiate(
             FireballPrefab,
-            transform.position + direction * 0.15f,
+            spawnPos,
             Quaternion.identity
         );
-        FireBall.GetComponent<FireballScript>().SetDirection(direction);
+        FireBall.GetComponent<FireballScript>().SetDirection(dir);
     }
 
     private void FixedUpdate()
     {
+        // Asigna la velocidad horizontal en tu físico propio
         rb.linearVelocity = new Vector2(Horizontal, rb.linearVelocity.y);
     }
 }

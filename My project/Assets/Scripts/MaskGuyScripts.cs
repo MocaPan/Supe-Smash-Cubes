@@ -1,9 +1,9 @@
-// Player2Script.cs
 using UnityEngine;
+using CustomPhysics2D;
 
 public class Player2Script : MonoBehaviour
 {
-    private Rigidbody2D rb;
+    private MyRigidbody2D rb;
     private Animator Animator;
     public GameObject FireballPrefab;
     private float Horizontal;
@@ -14,7 +14,7 @@ public class Player2Script : MonoBehaviour
 
     private void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        rb = GetComponent<MyRigidbody2D>();
         Animator = GetComponent<Animator>();
     }
 
@@ -83,7 +83,7 @@ public class Player2Script : MonoBehaviour
 
         GameObject FireBall = Instantiate(
             FireballPrefab,
-            transform.position + direction * 0.15f,
+            transform.position + direction * 0.2f,
             Quaternion.identity
         );
         FireBall.GetComponent<FireballScript>().SetDirection(direction);
