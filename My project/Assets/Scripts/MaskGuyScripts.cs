@@ -4,6 +4,7 @@ using CustomPhysics2D;
 public class Player2Script : MonoBehaviour
 {
     private MyRigidbody2D rb;
+    public AudioSource ShootSound;
     private Animator Animator;
     public GameObject FireballPrefab;
     private float Horizontal;
@@ -71,6 +72,7 @@ public class Player2Script : MonoBehaviour
 
     private void Shoot()
     {
+        ShootSound.Play();
         Vector3 direction;
         if (transform.localScale.x < 0)
         {

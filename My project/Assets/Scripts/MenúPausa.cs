@@ -42,8 +42,8 @@ public class MenúPausa : MonoBehaviour
     }
     public void Salir()
     {
-        Application.Quit();
-        Debug.Log("Saliendo del juego...");
-        
+        Time.timeScale = 1;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
+
     }
 }

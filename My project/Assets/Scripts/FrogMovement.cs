@@ -3,8 +3,9 @@ using CustomPhysics2D;
 
 public class FrogMovement : MonoBehaviour
 {
-    private MyRigidbody2D rb;      // Tu Rigidbody2D “casero”
+    private MyRigidbody2D rb;
     private Animator Animator;
+    public AudioSource ShootSound;
     public GameObject FireballPrefab;
     private float Horizontal;
     public float speed;
@@ -51,6 +52,7 @@ public class FrogMovement : MonoBehaviour
 
     private void Shoot()
     {
+        ShootSound.Play();
         Vector2 dir = transform.localScale.x < 0 ? Vector2.left : Vector2.right;
         Vector3 spawnPos = transform.position + (Vector3)dir * 0.2f;
 

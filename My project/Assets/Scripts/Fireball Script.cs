@@ -1,8 +1,10 @@
 using UnityEngine;
 using CustomPhysics2D;
 
+
 public class FireballScript : MonoBehaviour
 {
+    
     public float speed;
     private MyRigidbody2D rb;
     private Vector2 Direction;
@@ -10,7 +12,19 @@ public class FireballScript : MonoBehaviour
     {
         rb = GetComponent<MyRigidbody2D>();
     }
-
+    
+    void OnMyCollisionEnter(MyCollider2D other)
+    {
+       // if (other.CompareTag("Player")) 
+       // { 
+       //     other.gameObject.GetComponent<PlayerHealth>().TakeDamage(1);
+        //}
+        //else if (other.CompareTag("Wall"))
+        //{
+          //  DestroyFireBall();
+        //}
+            DestroyFireBall();
+    }
     void Update()
     {
         rb.linearVelocity = Direction * speed;
