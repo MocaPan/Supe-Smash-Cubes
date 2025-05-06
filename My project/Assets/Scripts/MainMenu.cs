@@ -3,6 +3,9 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
+    [SerializeField] GameObject MenúInfo;
+    [SerializeField] GameObject MenúPrincipal;
+    private bool inInfo = false;
     //private int nivelRandom = Random.Range(1, 4);
     public void Jugar()
     {
@@ -12,5 +15,18 @@ public class MainMenu : MonoBehaviour
     {
         Debug.Log("Saliendo del juego...");
         Application.Quit();
+    }
+    public void Information()
+    {
+        inInfo = true;
+        MenúInfo.SetActive(true);
+        MenúPrincipal.SetActive(false);
+
+    }
+    public void Volver()
+    {
+        inInfo = false;
+        MenúInfo.SetActive(false);
+        MenúPrincipal.SetActive(true);
     }
 }

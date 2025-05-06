@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: "Assets/Scenes/Men\xFAInicial.unity"
-    guid: 322121e7c82b202489fbe69010281e8c
+    path: "Assets/Scenes/Men\xFAIInicial.unity"
+    guid: bc9327f16df22d446af5bd5d8e17e10b
   - enabled: 1
     path: Assets/Scenes/PruebaJuego.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02

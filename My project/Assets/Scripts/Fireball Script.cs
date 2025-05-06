@@ -3,36 +3,40 @@ using CustomPhysics2D;
 
 public class FireballScript : MonoBehaviour
 {
-    public float speed;
+    [Header("Movimiento")]
+    public float speed = 5f;
+
     private MyRigidbody2D rb;
-    private Vector2 Direction;
+    private Vector2 direction;
+    private bool hasHit;    // ? flag para un solo impacto
 
     void Start()
     {
         rb = GetComponent<MyRigidbody2D>();
     }
 
-    void OnMyCollisionEnter(MyCollider2D other)
-    {
-        DestroyFireBall();
-    }
-
     void Update()
     {
-        rb.linearVelocity = Direction * speed;
+        rb.linearVelocity = direction * speed;
     }
 
-    public void SetDirection(Vector2 direction)
+    public void SetDirection(Vector2 dir)
     {
-        Direction = direction.normalized;
+        direction = dir.normalized;
 
-        // Girar la bola según la dirección
+        // Opcional: voltear sprite en X según la dirección
         Vector3 s = transform.localScale;
-        s.x = (Direction.x < 0) ? -Mathf.Abs(s.x) : Mathf.Abs(s.x);
+        s.x = Mathf.Sign(direction.x) * Mathf.Abs(s.x);
         transform.localScale = s;
     }
 
-    public void DestroyFireBall()
+    void OnMyCollisionEnter(MyCollider2D other)
+    {
+
+        DestroyFireball();
+    }
+
+    private void DestroyFireball()
     {
         Destroy(gameObject);
     }

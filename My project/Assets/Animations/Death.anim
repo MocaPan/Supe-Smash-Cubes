@@ -91,7 +91,7 @@ AnimationClip:
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
   m_Events:
-  - time: 0.16666667
+  - time: 0.5833333
     functionName: OnDeathAnimationComplete
     data: 
     objectReferenceParameter: {fileID: 11500000, guid: b289366e5acf3974fb844e99a116e6df, type: 3}

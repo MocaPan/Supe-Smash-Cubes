@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -5,6 +6,7 @@ public class MenúPausa : MonoBehaviour
 {
     [SerializeField] GameObject botonPausa;
     [SerializeField] GameObject menuPausa;
+    [SerializeField] GameObject Cronometro;
     private bool isPaused = false;
     private void Update()
     {
@@ -25,6 +27,7 @@ public class MenúPausa : MonoBehaviour
         isPaused = true;
         Time.timeScale = 0;
         botonPausa.SetActive(false);
+        Cronometro.SetActive(false);
         menuPausa.SetActive(true);
     }
     public void Reanudar()
@@ -32,6 +35,7 @@ public class MenúPausa : MonoBehaviour
         isPaused = false;
         Time.timeScale = 1;
         botonPausa.SetActive(true);
+        Cronometro.SetActive(true);
         menuPausa.SetActive(false);
     }
     public void Reiniciar()
