@@ -1,26 +1,22 @@
 using UnityEngine;
-using System.Collections;
 using CustomPhysics2D;
 
 [RequireComponent(typeof(MyRectangleCollider2D))]
 public class KillZone : MonoBehaviour
 {
-    public AudioSource DeathSound;
-    public Transform playerSpawnPoint;
-    public float respawnDelay = 1f;
+    public AudioSource deathSound;
 
     void OnMyTriggerEnter(MyCollider2D other)
     {
-        if (!other.CompareTag("Player")) return;
-        StartCoroutine(RespawnAfterDelay(other.transform));
-    }
+        if (!other.CompareTag("Player"))
+            return;
 
-    private IEnumerator RespawnAfterDelay(Transform player)
-    {
-        DeathSound?.Play();
-        player.gameObject.SetActive(false);
-        yield return new WaitForSeconds(respawnDelay);
-        player.position = playerSpawnPoint.position;
-        player.gameObject.SetActive(true);
+        var health = other.GetComponent<PlayerHealth>();
+        if (health == null || health.IsDead)
+            return;
+
+        deathSound?.Play();
+        // Inflige daño igual a toda la vida para forzar la muerte
+        health.TakeDamage(health.maxHealth);
     }
 }

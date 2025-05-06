@@ -85,7 +85,7 @@ public class Player2Script : MonoBehaviour
 
         GameObject FireBall = Instantiate(
             FireballPrefab,
-            transform.position + direction * 0.2f,
+            transform.position + direction * 0.28f,
             Quaternion.identity
         );
         FireBall.GetComponent<FireballScript>().SetDirection(direction);

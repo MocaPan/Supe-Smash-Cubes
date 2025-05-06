@@ -28,7 +28,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: FireBall
+  m_Name: MaskBall
   serializedVersion: 5
   m_AnimatorParameters: []
   m_AnimatorLayers:
@@ -64,7 +64,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: d3326f5f5216a8142805f1a7b8a34116, type: 2}
+  m_Motion: {fileID: 7400000, guid: 69c06217529414af2abcb4f5023bc745, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 

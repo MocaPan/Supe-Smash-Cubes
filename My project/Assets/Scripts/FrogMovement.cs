@@ -1,7 +1,7 @@
 using UnityEngine;
 using CustomPhysics2D;
 
-public class FrogMovement : MonoBehaviour
+public class MaskGuy : MonoBehaviour
 {
     private MyRigidbody2D rb;
     private Animator Animator;
@@ -54,7 +54,7 @@ public class FrogMovement : MonoBehaviour
     {
         ShootSound.Play();
         Vector2 dir = transform.localScale.x < 0 ? Vector2.left : Vector2.right;
-        Vector3 spawnPos = transform.position + (Vector3)dir * 0.2f;
+        Vector3 spawnPos = transform.position + (Vector3)dir * 0.28f;
 
         GameObject FireBall = Instantiate(
             FireballPrefab,
