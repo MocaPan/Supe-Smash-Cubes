@@ -10,6 +10,8 @@ public class MenúPausa : MonoBehaviour
     private bool isPaused = false;
     private void Update()
     {
+        if (CronometroTMP.GameIsOver)
+            return;
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (isPaused)

@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      ranaStarWars_0: -826478722145393938
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

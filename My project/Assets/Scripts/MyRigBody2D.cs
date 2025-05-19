@@ -1,6 +1,6 @@
+// MyRigidbody2D.cs (actualizado)
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using System;  // Para Math.Abs
 
 namespace CustomPhysics2D
 {
@@ -31,34 +31,41 @@ namespace CustomPhysics2D
 
         void FixedUpdate()
         {
+            // Aplicar gravedad si no es kinematic
             if (!isKinematic)
                 velocity.y += Physics2D.gravity.y * gravityScale * Time.fixedDeltaTime;
 
+            // Movimiento
             frameMovement = velocity * Time.fixedDeltaTime;
             if (frameMovement != Vector2.zero)
                 transform.position += (Vector3)frameMovement;
 
-            MyCollider2D[] all = MyCollider2D.AllColliders;
+            // Colisiones personalizadas
+            var all = MyCollider2D.AllColliders;
             int count = MyCollider2D.ColliderCount;
 
             for (int i = 0; i < count; i++)
             {
-                MyCollider2D other = all[i];
-                if (other == null || other == myCollider) continue;
+                var other = all[i];
+                if (other == null || other == myCollider)
+                    continue;
 
                 bool collided = false;
 
-                if (myCollider is MyRectangleCollider2D rA && other is MyRectangleCollider2D rB)
+                // Rect vs Rect
+                var rectA = myCollider as MyRectangleCollider2D;
+                var rectB = other as MyRectangleCollider2D;
+                if (rectA != null && rectB != null)
                 {
-                    Vector2 aPos = (Vector2)rA.transform.position;
-                    Vector2 bPos = (Vector2)rB.transform.position;
-                    Vector2 aHalf = rA.HalfSize;
-                    Vector2 bHalf = rB.HalfSize;
+                    Vector2 aPos = rectA.transform.position;
+                    Vector2 bPos = rectB.transform.position;
+                    Vector2 aHalf = rectA.HalfSize;
+                    Vector2 bHalf = rectB.HalfSize;
 
                     if (MyCollider2D.CheckRectRect(aPos, aHalf, bPos, bHalf))
                     {
                         collided = true;
-                        if (!rA.isTrigger && !rB.isTrigger)
+                        if (!rectA.isTrigger && !rectB.isTrigger)
                         {
                             Vector2 diff = aPos - bPos;
                             float overlapX = aHalf.x + bHalf.x - Mathf.Abs(diff.x);
@@ -79,22 +86,23 @@ namespace CustomPhysics2D
                         }
                     }
                 }
-                else if (myCollider is MyCapsuleCollider2D cA && other is MyCapsuleCollider2D cB)
+                // Circle vs Circle
+                else if (myCollider is MyCapsuleCollider2D capA && other is MyCapsuleCollider2D capB)
                 {
-                    Vector2 posA = (Vector2)cA.transform.position;
-                    Vector2 posB = (Vector2)cB.transform.position;
-                    float radA = cA.radius;
-                    float radB = cB.radius;
+                    Vector2 posA = capA.transform.position;
+                    Vector2 posB = capB.transform.position;
+                    float rA = capA.radius;
+                    float rB = capB.radius;
 
-                    if (MyCollider2D.CheckCircleCircle(posA, radA, posB, radB))
+                    if (MyCollider2D.CheckCircleCircle(posA, rA, posB, rB))
                     {
                         collided = true;
-                        if (!cA.isTrigger && !cB.isTrigger)
+                        if (!capA.isTrigger && !capB.isTrigger)
                         {
                             Vector2 diff = posA - posB;
                             float dist = diff.magnitude;
                             if (dist < Mathf.Epsilon) { diff = Vector2.right; dist = 1e-6f; }
-                            float overlap = (radA + radB) - dist;
+                            float overlap = (rA + rB) - dist;
                             Vector2 push = diff.normalized;
                             transform.position += (Vector3)(push * overlap);
                             if (Vector2.Dot(velocity, push) < 0)
@@ -102,133 +110,30 @@ namespace CustomPhysics2D
                         }
                     }
                 }
-                else if ((myCollider is MyCapsuleCollider2D && other is MyRectangleCollider2D) ||
-                         (myCollider is MyRectangleCollider2D && other is MyCapsuleCollider2D))
+                // Capsule vs Rect or Rect vs Capsule
+                else
                 {
-                    MyCapsuleCollider2D cap = myCollider is MyCapsuleCollider2D ? (MyCapsuleCollider2D)myCollider : (MyCapsuleCollider2D)other;
-                    MyRectangleCollider2D rect = myCollider is MyRectangleCollider2D ? (MyRectangleCollider2D)myCollider : (MyRectangleCollider2D)other;
-                    Vector2 cPos = (Vector2)cap.transform.position;
-                    Vector2 rPos = (Vector2)rect.transform.position;
-                    Vector2 rHalf = rect.HalfSize;
-                    float rad = cap.radius;
+                    var cap = myCollider as MyCapsuleCollider2D;
+                    var rect = myCollider as MyRectangleCollider2D;
+                    var otherCap = other as MyCapsuleCollider2D;
+                    var otherRect = other as MyRectangleCollider2D;
 
-                    if (MyCollider2D.CheckCircleRect(cPos, rad, rPos, rHalf))
+                    if (cap != null && otherRect != null)
                     {
-                        collided = true;
-                        if (!cap.isTrigger && !rect.isTrigger)
-                        {
-                            Vector2 diff = cPos - rPos;
-                            float overlapX = (rHalf.x + rad) - Mathf.Abs(diff.x);
-                            float overlapY = (rHalf.y + rad) - Mathf.Abs(diff.y);
-
-                            if (overlapX < overlapY)
-                            {
-                                float dir = diff.x >= 0 ? 1 : -1;
-                                transform.position += new Vector3(dir * overlapX, 0, 0);
-                                velocity.x = 0;
-                            }
-                            else
-                            {
-                                float dir = diff.y >= 0 ? 1 : -1;
-                                transform.position += new Vector3(0, dir * overlapY, 0);
-                                velocity.y = 0;
-                            }
-                        }
+                        ProcessCapsuleRect(cap, otherRect, ref collided);
+                    }
+                    else if (rect != null && otherCap != null)
+                    {
+                        ProcessCapsuleRect(otherCap, rect, ref collided);
+                    }
+                    // Tilemap vs Dynamic
+                    else if (other is MyTilemapCollider2D tmCol)
+                    {
+                        ProcessTilemapCollision(other as MyTilemapCollider2D, ref collided);
                     }
                 }
-                else if (other is MyTilemapCollider2D tmCol)
-                {
-                    Vector2 dynCenter = (Vector2)myCollider.transform.position;
-                    float minX, minY, maxX, maxY;
 
-                    if (myCollider is MyRectangleCollider2D rect)
-                    {
-                        Vector2 half = rect.HalfSize;
-                        minX = dynCenter.x - half.x;
-                        maxX = dynCenter.x + half.x;
-                        minY = dynCenter.y - half.y;
-                        maxY = dynCenter.y + half.y;
-                    }
-                    else
-                    {
-                        MyCapsuleCollider2D cap = (MyCapsuleCollider2D)myCollider;
-                        float rad = cap.radius;
-                        float halfW = rad;
-                        float halfH = (cap.height <= 2 * rad) ? rad : cap.height / 2f;
-                        minX = dynCenter.x - halfW;
-                        maxX = dynCenter.x + halfW;
-                        minY = dynCenter.y - halfH;
-                        maxY = dynCenter.y + halfH;
-                    }
-
-                    Tilemap tm = tmCol.GetComponent<Tilemap>();
-                    Vector3Int minCell = tm.WorldToCell(new Vector3(minX, minY, 0));
-                    Vector3Int maxCell = tm.WorldToCell(new Vector3(maxX, maxY, 0));
-
-                    for (int cx = minCell.x; cx <= maxCell.x; cx++)
-                        for (int cy = minCell.y; cy <= maxCell.y; cy++)
-                        {
-                            Vector3Int cellPos = new Vector3Int(cx, cy, 0);
-                            if (!tm.HasTile(cellPos)) continue;
-                            Vector3 worldCenter = tm.CellToWorld(cellPos) + (Vector3)tm.cellSize / 2;
-                            Vector2 blockHalf = tm.cellSize / 2;
-
-                            if (myCollider is MyRectangleCollider2D dynrect)
-                            {
-                                if (MyCollider2D.CheckRectRect((Vector2)dynrect.transform.position, dynrect.HalfSize, (Vector2)worldCenter, blockHalf))
-                                {
-                                    collided = true;
-                                    if (!dynrect.isTrigger)
-                                    {
-                                        Vector2 diff = (Vector2)dynrect.transform.position - (Vector2)worldCenter;
-                                        float overlapX = dynrect.HalfSize.x + blockHalf.x - Mathf.Abs(diff.x);
-                                        float overlapY = dynrect.HalfSize.y + blockHalf.y - Mathf.Abs(diff.y);
-
-                                        if (overlapX < overlapY)
-                                        {
-                                            float dir = diff.x >= 0 ? 1 : -1;
-                                            transform.position += new Vector3(dir * overlapX, 0, 0);
-                                            velocity.x = 0;
-                                        }
-                                        else
-                                        {
-                                            float dir = diff.y >= 0 ? 1 : -1;
-                                            transform.position += new Vector3(0, dir * overlapY, 0);
-                                            velocity.y = 0;
-                                        }
-                                    }
-                                }
-                            }
-                            else if (myCollider is MyCapsuleCollider2D cap)
-                            {
-                                float rad = cap.radius;
-                                if (MyCollider2D.CheckCircleRect((Vector2)cap.transform.position, rad, (Vector2)worldCenter, blockHalf))
-                                {
-                                    collided = true;
-                                    if (!cap.isTrigger)
-                                    {
-                                        Vector2 diff = (Vector2)cap.transform.position - (Vector2)worldCenter;
-                                        float overlapX = blockHalf.x + rad - Mathf.Abs(diff.x);
-                                        float overlapY = blockHalf.y + rad - Mathf.Abs(diff.y);
-
-                                        if (overlapX < overlapY)
-                                        {
-                                            float dir = diff.x >= 0 ? 1 : -1;
-                                            transform.position += new Vector3(dir * overlapX, 0, 0);
-                                            velocity.x = 0;
-                                        }
-                                        else
-                                        {
-                                            float dir = diff.y >= 0 ? 1 : -1;
-                                            transform.position += new Vector3(0, dir * overlapY, 0);
-                                            velocity.y = 0;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                }
-
+                // Eventos
                 if (collided)
                 {
                     if (myCollider.isTrigger || other.isTrigger)
@@ -244,6 +149,134 @@ namespace CustomPhysics2D
                 }
             }
         }
+
+        // Procesamiento de colisión cápsula-rectángulo
+        private void ProcessCapsuleRect(MyCapsuleCollider2D cap, MyRectangleCollider2D rect, ref bool collided)
+        {
+            Vector2 cPos = cap.transform.position;
+            Vector2 rPos = rect.transform.position;
+            Vector2 half = rect.HalfSize;
+            float rad = cap.radius;
+
+            if (MyCollider2D.CheckCircleRect(cPos, rad, rPos, half))
+            {
+                collided = true;
+                if (!cap.isTrigger && !rect.isTrigger)
+                {
+                    Vector2 diff = cPos - rPos;
+                    float overlapX = half.x + rad - Mathf.Abs(diff.x);
+                    float overlapY = half.y + rad - Mathf.Abs(diff.y);
+
+                    if (overlapX < overlapY)
+                    {
+                        float dir = diff.x >= 0 ? 1 : -1;
+                        transform.position += new Vector3(dir * overlapX, 0, 0);
+                        velocity.x = 0;
+                    }
+                    else
+                    {
+                        float dir = diff.y >= 0 ? 1 : -1;
+                        transform.position += new Vector3(0, dir * overlapY, 0);
+                        velocity.y = 0;
+                    }
+                }
+            }
+        }
+
+        // Procesamiento de colisión con Tilemap
+        private void ProcessTilemapCollision(MyTilemapCollider2D tmCol, ref bool collided)
+        {
+            Vector2 dynCenter;
+            float minX, minY, maxX, maxY;
+
+            if (myCollider is MyRectangleCollider2D rect)
+            {
+                dynCenter = rect.transform.position;
+                Vector2 half = rect.HalfSize;
+                minX = dynCenter.x - half.x;
+                maxX = dynCenter.x + half.x;
+                minY = dynCenter.y - half.y;
+                maxY = dynCenter.y + half.y;
+            }
+            else if (myCollider is MyCapsuleCollider2D cap)
+            {
+                dynCenter = cap.transform.position;
+                float rad = cap.radius;
+                float halfW = rad;
+                float halfH = cap.height <= 2 * rad ? rad : cap.height / 2f;
+                minX = dynCenter.x - halfW;
+                maxX = dynCenter.x + halfW;
+                minY = dynCenter.y - halfH;
+                maxY = dynCenter.y + halfH;
+            }
+            else return;
+
+            Tilemap tm = tmCol.GetComponent<Tilemap>();
+            Vector3Int minCell = tm.WorldToCell(new Vector3(minX, minY, 0));
+            Vector3Int maxCell = tm.WorldToCell(new Vector3(maxX, maxY, 0));
+
+            for (int cx = minCell.x; cx <= maxCell.x; cx++)
+                for (int cy = minCell.y; cy <= maxCell.y; cy++)
+                {
+                    Vector3Int cellPos = new Vector3Int(cx, cy, 0);
+                    if (!tm.HasTile(cellPos)) continue;
+                    Vector3 worldCenter = tm.CellToWorld(cellPos) + (Vector3)tm.cellSize / 2f;
+                    Vector2 blockHalf = tm.cellSize / 2f;
+
+                    if (myCollider is MyRectangleCollider2D dynRect)
+                    {
+                        if (MyCollider2D.CheckRectRect((Vector2)dynRect.transform.position, dynRect.HalfSize, (Vector2)worldCenter, blockHalf))
+                        {
+                            collided = true;
+                            if (!dynRect.isTrigger)
+                            {
+                                Vector2 diff = (Vector2)dynRect.transform.position - (Vector2)worldCenter;
+                                float overlapX = dynRect.HalfSize.x + blockHalf.x - Mathf.Abs(diff.x);
+                                float overlapY = dynRect.HalfSize.y + blockHalf.y - Mathf.Abs(diff.y);
+
+                                if (overlapX < overlapY)
+                                {
+                                    float dir = diff.x >= 0 ? 1 : -1;
+                                    transform.position += new Vector3(dir * overlapX, 0, 0);
+                                    velocity.x = 0;
+                                }
+                                else
+                                {
+                                    float dir = diff.y >= 0 ? 1 : -1;
+                                    transform.position += new Vector3(0, dir * overlapY, 0);
+                                    velocity.y = 0;
+                                }
+                            }
+                        }
+                    }
+                    else if (myCollider is MyCapsuleCollider2D dynCap)
+                    {
+                        float rad = dynCap.radius;
+                        if (MyCollider2D.CheckCircleRect((Vector2)dynCap.transform.position, rad, (Vector2)worldCenter, blockHalf))
+                        {
+                            collided = true;
+                            if (!dynCap.isTrigger)
+                            {
+                                Vector2 diff = (Vector2)dynCap.transform.position - (Vector2)worldCenter;
+                                float overlapX = blockHalf.x + rad - Mathf.Abs(diff.x);
+                                float overlapY = blockHalf.y + rad - Mathf.Abs(diff.y);
+
+                                if (overlapX < overlapY)
+                                {
+                                    float dir = diff.x >= 0 ? 1 : -1;
+                                    transform.position += new Vector3(dir * overlapX, 0, 0);
+                                    velocity.x = 0;
+                                }
+                                else
+                                {
+                                    float dir = diff.y >= 0 ? 1 : -1;
+                                    transform.position += new Vector3(0, dir * overlapY, 0);
+                                    velocity.y = 0;
+                                }
+                            }
+                        }
+                    }
+                }
+        }
     }
 }
-

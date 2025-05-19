@@ -4,6 +4,10 @@ using CustomPhysics2D;
 
 public class PlayerHealth : MonoBehaviour
 {
+    [Header("Score Enemico")]
+    [Tooltip("Referencia de score del enemigo")]
+    [SerializeField] private Score playerScore;
+
     [Header("Configuración de Vida")]
     [Tooltip("Puntos de vida máximos")]
     public int maxHealth = 4;
@@ -111,6 +115,9 @@ public class PlayerHealth : MonoBehaviour
         {
             animator.SetTrigger(deathTrigger);
         }
+
+        if (playerScore != null)
+            playerScore.AddScore(1);
     }
 
     // Llamado desde un Animation Event al final del clip "Death"

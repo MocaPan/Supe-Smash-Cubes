@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      maskguyStarWars_0: -3980111803490351780
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
