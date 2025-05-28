@@ -9,9 +9,11 @@ public class Player2Script : MonoBehaviour
     public GameObject FireballPrefab;
     private float Horizontal;
     public float speed;
-    public float jumpForce;
+    public float jumpForce = 7f;
     private float LastShoot;
     public float shootDelay;
+    public float doubleJumpMultiplier = 2.5f;
+    private bool canDoubleJump = false;
 
     private void Start()
     {
@@ -45,7 +47,7 @@ public class Player2Script : MonoBehaviour
             transform.localScale = new Vector3(1, 1, 1);
         }
 
-        // AnimaciÛn de correr
+        // Animaci√≥n de correr
         Animator.SetBool("Running", Horizontal != 0.0f);
 
         // Salto con ? (opcional)
@@ -54,11 +56,17 @@ public class Player2Script : MonoBehaviour
             Jump();
         }
 
-        // Disparo con Ò (KeyCode.Semicolon en teclado espaÒol)
+        // Disparo con ;
         if (Input.GetKey(KeyCode.Semicolon) && Time.time > LastShoot + shootDelay)
         {
             Shoot();
             LastShoot = Time.time;
+        }
+
+        // Reiniciar salto doble si est√° en el suelo
+        if (Mathf.Abs(rb.linearVelocity.y) < 0.01f)
+        {
+            canDoubleJump = true;
         }
     }
 
@@ -67,6 +75,11 @@ public class Player2Script : MonoBehaviour
         if (Mathf.Abs(rb.linearVelocity.y) < 0.01f)
         {
             rb.AddForce(Vector2.up * jumpForce);
+        }
+        else if (canDoubleJump && PowerUpManager.Instance != null && PowerUpManager.Instance.HasPowerUp(PowerUpType.DoubleJump))
+        {
+            canDoubleJump = false;
+            rb.AddForce(Vector2.up * jumpForce * doubleJumpMultiplier);
         }
     }
 
@@ -94,5 +107,21 @@ public class Player2Script : MonoBehaviour
     private void FixedUpdate()
     {
         rb.linearVelocity = new Vector2(Horizontal, rb.linearVelocity.y);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("EnemyProjectile"))
+        {
+            if (PowerUpManager.Instance != null && PowerUpManager.Instance.HasPowerUp(PowerUpType.Shield))
+            {
+                // Ignorar el empuje si tiene escudo
+                return;
+            }
+            // Aplicar empuje
+            Vector2 pushDirection = (transform.position - collision.transform.position).normalized;
+            float pushStrength = 2.0f; // Ajusta seg√∫n lo necesario
+            rb.linearVelocity = new Vector2(pushDirection.x * pushStrength, rb.linearVelocity.y);
+        }
     }
 }

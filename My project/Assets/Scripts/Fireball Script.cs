@@ -3,41 +3,38 @@ using CustomPhysics2D;
 
 public class FireballScript : MonoBehaviour
 {
-    [Header("Movimiento")]
-    public float speed = 5f;
-
-    private MyRigidbody2D rb;
     private Vector2 direction;
-    private bool hasHit;    // ? flag para un solo impacto
-
-    void Start()
-    {
-        rb = GetComponent<MyRigidbody2D>();
-    }
-
-    void Update()
-    {
-        rb.linearVelocity = direction * speed;
-    }
+    public float speed = 5f;
+    public float basePushForce = 5f;
+    public float strongPushMultiplier = 2.5f;
 
     public void SetDirection(Vector2 dir)
     {
         direction = dir.normalized;
-
-        // Opcional: voltear sprite en X según la dirección
         Vector3 s = transform.localScale;
         s.x = Mathf.Sign(direction.x) * Mathf.Abs(s.x);
         transform.localScale = s;
     }
 
-    void OnMyCollisionEnter(MyCollider2D other)
+    private void Update()
     {
-
-        DestroyFireball();
+        transform.position += (Vector3)(direction * speed * Time.deltaTime);
     }
 
-    private void DestroyFireball()
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        Destroy(gameObject);
+        if ("Enemy".Equals(other.tag)) // Re-ordered operands for better performance
+        {
+            float pushForce = basePushForce;
+            if (PowerUpManager.Instance != null && PowerUpManager.Instance.HasPowerUp(PowerUpType.StrongShot))
+                pushForce *= strongPushMultiplier;
+
+            // Assume enemy has a method to be pushed
+            var enemyRb = other.GetComponent<Rigidbody2D>();
+            if (enemyRb != null)
+                enemyRb.AddForce(direction * pushForce, ForceMode2D.Impulse);
+
+            Destroy(gameObject);
+        }
     }
 }
