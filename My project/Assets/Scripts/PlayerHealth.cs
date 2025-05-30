@@ -40,7 +40,7 @@ public class PlayerHealth : MonoBehaviour
     private bool isDead;
     private float respawnTimer;
     public bool isShielded = false;
-    private float shieldEndTime = 0f;
+    public float shieldEndTime = 0f;
     public AudioSource shieldActivateSound; // Optional
 
     void Start()

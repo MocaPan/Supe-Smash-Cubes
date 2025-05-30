@@ -32,9 +32,9 @@ public class FrogMovement : MonoBehaviour
     void Update()
     {
         // Movimiento con A/D
-        if (Input.GetKey(KeyCode.A))
+        if (Input.GetKey(KeyCode.LeftArrow))
             Horizontal = -1.0f * speed;
-        else if (Input.GetKey(KeyCode.D))
+        else if (Input.GetKey(KeyCode.RightArrow))
             Horizontal = 1.0f * speed;
         else
             Horizontal = 0.0f;
@@ -49,7 +49,7 @@ public class FrogMovement : MonoBehaviour
         Animator.SetBool("Running", Horizontal != 0.0f);
 
         // ----- DOUBLE JUMP LOGIC -----
-        if (Input.GetKeyDown(KeyCode.W))
+        if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             if (Mathf.Abs(rb.linearVelocity.y) < 0.01f)
             {
@@ -65,8 +65,8 @@ public class FrogMovement : MonoBehaviour
             }
         }
 
-        // Disparo con F
-        if (Input.GetKey(KeyCode.F) && Time.time > LastShoot + shootDelay)
+        // Disparo con L
+        if (Input.GetKey(KeyCode.L) && Time.time > LastShoot + shootDelay)
         {
             Shoot();
             LastShoot = Time.time;
