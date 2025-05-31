@@ -58,7 +58,7 @@ public class MaskGuy : MonoBehaviour
             }
             else if (hasDoubleJump && !doubleJumpUsed)
             {
-                rb.AddForce(Vector2.up * jumpForce * 2f); // Double jump is 2x force
+                rb.AddForce(Vector2.up * jumpForce * 3f); // Double jump is 3x force
                 doubleJumpUsed = true;
                 hasDoubleJump = false; // Power-up is consumed
                 if (powerUpSound != null) powerUpSound.Play();

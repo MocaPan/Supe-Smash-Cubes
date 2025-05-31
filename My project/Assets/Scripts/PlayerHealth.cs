@@ -35,8 +35,8 @@ public class PlayerHealth : MonoBehaviour
     [Tooltip("Im�genes de corazones llenos (encima)")]
     public Image[] heartsFull;    // tama�o = maxHealth
 
-    private int currentHealth;
-    private bool isDead;
+    public int currentHealth;
+    public bool isDead;
     private float respawnTimer;
     public bool isShielded = false;
     public float shieldEndTime = 0f;
@@ -76,7 +76,7 @@ public class PlayerHealth : MonoBehaviour
             Respawn();
         }
         // Handle shield expiration
-        if (isShielded && Time.time > shieldEndTime)
+        if (isShielded && Time.time >= shieldEndTime)
         {
             isShielded = false;
             // Optional: visual/audio feedback
@@ -192,12 +192,19 @@ public class PlayerHealth : MonoBehaviour
         }
     }*/
 
-   void OnMyTriggerEnter(MyCollider2D other)
-{
-    // Only killzones cause damage now
+    void OnMyTriggerEnter(MyCollider2D other)
+    {
     if (other.CompareTag("KillZone"))
     {
-        TakeDamage(currentHealth);
+        InstantKill();
     }
-}
-}
+    }
+    public void InstantKill()
+    {
+        if (isDead) return;
+
+        currentHealth = 0;
+        UpdateHeartsUI();
+        Die();
+    }
+    }

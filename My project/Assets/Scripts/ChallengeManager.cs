@@ -1,18 +1,20 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using TMPro;
 
 public class ChallengeManager : MonoBehaviour
 {
+
     public IProgrammingTree<int> playerTree;
     public Score playerScore;
     public int pointsPerChallenge = 100;
 
-    // Lista de retos (puedes expandir)
     private List<Action> challengeSetters;
     private System.Random random = new System.Random();
     public Func<IProgrammingTree<int>, bool> currentChallenge;
     public string challengeDescription;
+    public TMP_Text challengeUIText;
 
     private void Awake()
     {
@@ -20,7 +22,7 @@ public class ChallengeManager : MonoBehaviour
         {
             SetBSTChallenge_5Nodes,
             SetBSTChallenge_Height3,
-            () => SetBSTChallenge_RootValue(10),    // Puedes poner X random aquí
+            () => SetBSTChallenge_RootValue(10),    // Puedes randomizar
             SetAVLChallenge_6Nodes,
             SetAVLChallenge_Balance0,
             () => SetAVLChallenge_RootValue(20),
@@ -48,63 +50,56 @@ public class ChallengeManager : MonoBehaviour
         return false;
     }
 
-    // Selecciona un reto aleatorio
     public void NextRandomChallenge()
     {
         int idx = random.Next(challengeSetters.Count);
         challengeSetters[idx]();
         Debug.Log("Nuevo reto: " + challengeDescription);
+        if (challengeUIText != null) challengeUIText.text = challengeDescription;
     }
 
-    // ======================== RETOS ========================
+    // ========== RETOS ==========
+
     public void SetBSTChallenge_5Nodes()
     {
         challengeDescription = "Construye un BST con exactamente 5 nodos";
         currentChallenge = (tree) => (tree as BSTTree)?.CountNodes() == 5;
     }
-
     public void SetBSTChallenge_Height3()
     {
         challengeDescription = "Construye un BST de altura exactamente 3";
         currentChallenge = (tree) => (tree as BSTTree)?.GetHeight() == 3;
     }
-
     public void SetBSTChallenge_RootValue(int value)
     {
         challengeDescription = $"La raíz del BST debe ser igual a {value}";
         currentChallenge = (tree) => (tree as BSTTree)?.GetRootValue() == value;
     }
-
     public void SetAVLChallenge_6Nodes()
     {
         challengeDescription = "Construye un AVL con exactamente 6 nodos";
         currentChallenge = (tree) => (tree as AVLTree)?.CountNodes() == 6;
     }
-
     public void SetAVLChallenge_Balance0()
     {
         challengeDescription = "El factor de balance de la raíz del AVL debe ser 0";
         currentChallenge = (tree) => (tree as AVLTree)?.GetBalanceFactorRoot() == 0;
     }
-
     public void SetAVLChallenge_RootValue(int value)
     {
         challengeDescription = $"La raíz del AVL debe ser igual a {value}";
         currentChallenge = (tree) => (tree as AVLTree)?.GetRootValue() == value;
     }
-
     public void SetBTreeChallenge_7Keys()
     {
         challengeDescription = "El B-Tree debe tener al menos 7 claves";
         currentChallenge = (tree) => (tree as BTree)?.CountKeys() >= 7;
     }
-
     public void SetBTreeChallenge_RootTwoChildren()
     {
         challengeDescription = "La raíz del B-Tree debe tener al menos 2 hijos";
         currentChallenge = (tree) => (tree as BTree)?.RootChildrenCount() >= 2;
     }
-
     public void SetBTreeChallenge_Leaf3Keys()
     {
         challengeDescription = "Al menos una hoja del B-Tree debe tener exactamente 3 claves";

@@ -2,31 +2,20 @@ using UnityEngine;
 
 public class PlayerTreeHandler : MonoBehaviour
 {
-    private IProgrammingTree<int> tree;
+    public IProgrammingTree<int> myTree; // BST, AVLTree, BTree, etc.
+    public IProgrammingTree<int> Tree => myTree;
 
-    public IProgrammingTree<int> Tree => tree;
-
-    private void Awake()
+    public void AddNumber(int value)
     {
-        switch (TreeManager.CurrentTreeType)
-        {
-            case TreeType.BST:
-                tree = new BSTTree();
-                break;
-            case TreeType.AVL:
-                tree = new AVLTree();
-                break;
-            case TreeType.BTree:
-                tree = new BTree(3); 
-                break;
-        }
+        if (myTree != null)
+            myTree.Insert(value);
     }
-
+    
     public Transform treeOrigin;
     public void AddNumber(int number)
     {
         tree.Insert(number);
-        Debug.Log($"Insertado número {number} en el árbol de {gameObject.name}");
+        Debug.Log($"Insertado nï¿½mero {number} en el ï¿½rbol de {gameObject.name}");
 
         if (TreeVisualizer.Instance != null)
         {
@@ -34,7 +23,11 @@ public class PlayerTreeHandler : MonoBehaviour
         }
         else 
         {
-            Debug.LogWarning("TreeVisualizer.Instance no está asignado.");
+            Debug.LogWarning("TreeVisualizer.Instance no estï¿½ asignado.");
         }
+
+    public IProgrammingTree<int> GetTree()
+    {
+        return myTree;
     }
 }
