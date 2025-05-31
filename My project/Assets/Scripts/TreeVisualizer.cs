@@ -1,63 +1,52 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class TreeVisualizer : MonoBehaviour
 {
-    public static TreeVisualizer Instance;
+    public static TreeVisualizer Instance { get; private set; }
 
-    public GameObject treeNodeUIPrefab; // Prefab del nodo visual (círculo con número)
-    public float horizontalSpacing = 100f;
-    public float verticalSpacing = 100f;
+    public GameObject nodePrefab;
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        Instance = this;
+        Debug.Log("TreeVisualizer inicializado");
     }
 
-    public void Visualize(IProgrammingTree<int> tree, Transform parent)
+    public void Visualize(IProgrammingTree<int> tree, Transform origin)
     {
-        if (treeNodeUIPrefab == null)
-        {
-            Debug.LogError("Falta asignar el prefab del nodo visual en el TreeVisualizer.");
-            return;
-        }
+        ClearPrevious(origin);
 
-        // Elimina nodos anteriores
-        foreach (Transform child in parent)
-        {
-            Destroy(child.gameObject);
-        }
 
-        IProgrammingTreeNode<int> root = tree.GetRoot();
-        if (root != null)
-        {
-            DrawNode(root, parent, 0, 0, 1);
-        }
+        if (tree == null || tree.GetRoot() == null) return;
+
+        VisualizeRecursive(tree.GetRoot(), Vector2.zero, 0, origin);
     }
 
-    private void DrawNode(IProgrammingTreeNode<int> node, Transform parent, float x, float y, float scale)
+    private void VisualizeRecursive(IProgrammingTreeNode<int> node, Vector2 position, int depth, Transform parent)
     {
-        GameObject nodeGO = Instantiate(treeNodeUIPrefab, parent);
-        RectTransform rectTransform = nodeGO.GetComponent<RectTransform>();
-        rectTransform.anchoredPosition = new Vector2(x, y);
+        var nodeGO = Instantiate(nodePrefab, parent);
+        var rectTransform = nodeGO.GetComponent<RectTransform>();
+        rectTransform.anchoredPosition = position;
 
-        Text numberText = nodeGO.GetComponentInChildren<Text>();
-        if (numberText != null)
-            numberText.text = node.GetValue().ToString();
+        var nodeUI = nodeGO.GetComponent<TreeNodeUI>();
+        nodeUI.SetValue(node.GetValue());
 
-        List<IProgrammingTreeNode<int>> children = node.GetChildren();
-        if (children.Count == 0) return;
-
-        float width = horizontalSpacing * scale;
-
+        var children = node.GetChildren();
+        float spacing = 200f / (depth + 1);
         for (int i = 0; i < children.Count; i++)
         {
-            float childX = x + (i - (children.Count - 1) / 2f) * width;
-            float childY = y - verticalSpacing;
-            DrawNode(children[i], parent, childX, childY, scale * 0.7f);
+            float xOffset = (i - children.Count / 2f) * spacing;
+            Vector2 childPos = position + new Vector2(xOffset, -100);
+            VisualizeRecursive(children[i], childPos, depth + 1, parent);
+        }
+    }
+
+    private void ClearPrevious(Transform origin)
+    {
+        foreach (Transform child in origin)
+        {
+            Destroy(child.gameObject);
         }
     }
 }

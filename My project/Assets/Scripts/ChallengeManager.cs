@@ -5,6 +5,9 @@ using TMPro;
 
 public class ChallengeManager : MonoBehaviour
 {
+
+    public IProgrammingTree<int> playerTree;
+    public Score playerScore;
     public int pointsPerChallenge = 100;
 
     private List<Action> challengeSetters;
