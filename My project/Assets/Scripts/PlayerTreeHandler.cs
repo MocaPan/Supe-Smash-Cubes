@@ -3,20 +3,22 @@ using UnityEngine;
 
 public class PlayerTreeHandler : MonoBehaviour
 {
-    private IProgrammingTree tree;
+    private IProgrammingTree<int> tree;
+
+    public IProgrammingTree<int> Tree => tree;
 
     private void Awake()
     {
         switch (TreeManager.CurrentTreeType)
         {
             case TreeType.BST:
-                tree = new BST();
+                tree = new BSTTree();
                 break;
             case TreeType.AVL:
                 tree = new AVLTree();
                 break;
             case TreeType.BTree:
-                tree = new BTree(); 
+                tree = new BTree(3); 
                 break;
         }
     }

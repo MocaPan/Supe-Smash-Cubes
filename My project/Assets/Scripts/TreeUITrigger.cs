@@ -7,6 +7,6 @@ public class TreeUITrigger : MonoBehaviour
 
     public void ShowTree()
     {
-        visualizer.VisualizeTree(treeHandler.tree);
+        visualizer.Visualize(treeHandler.Tree, treeHandler.transform);
     }
 }
