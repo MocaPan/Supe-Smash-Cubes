@@ -1,11 +1,11 @@
 using UnityEngine;
 using CustomPhysics2D;
 
-public class Player2Script : MonoBehaviour
+public class MaskGuy : MonoBehaviour
 {
     private MyRigidbody2D rb;
-    public AudioSource ShootSound;
     private Animator Animator;
+    public AudioSource ShootSound;
     public GameObject FireballPrefab;
     private float Horizontal;
     public float speed;
@@ -13,86 +13,106 @@ public class Player2Script : MonoBehaviour
     private float LastShoot;
     public float shootDelay;
 
-    private void Start()
+    // ----- POWER-UP FIELDS -----
+    public bool hasDoubleJump = false;
+    private bool doubleJumpUsed = false;
+
+    public bool hasStrongShot = false;
+    private float strongShotEndTime = 0f;
+    public float shotForceMultiplier = 1f; // default is 1
+
+    public AudioSource powerUpSound; // Optional: assign in Inspector for feedback
+
+    void Start()
     {
         rb = GetComponent<MyRigidbody2D>();
         Animator = GetComponent<Animator>();
     }
 
-    private void Update()
+    void Update()
     {
-        // Movimiento con flechas ? / ?
-        if (Input.GetKey(KeyCode.LeftArrow))
-        {
+        // Movimiento con A/D
+        if (Input.GetKey(KeyCode.A))
             Horizontal = -1.0f * speed;
-        }
-        else if (Input.GetKey(KeyCode.RightArrow))
-        {
+        else if (Input.GetKey(KeyCode.D))
             Horizontal = 1.0f * speed;
-        }
         else
-        {
             Horizontal = 0.0f;
-        }
 
         // Voltear sprite
         if (Horizontal < 0.0f)
-        {
             transform.localScale = new Vector3(-1, 1, 1);
-        }
         else if (Horizontal > 0.0f)
-        {
             transform.localScale = new Vector3(1, 1, 1);
-        }
 
-        // AnimaciÛn de correr
+        // Animaci√≥n de correr
         Animator.SetBool("Running", Horizontal != 0.0f);
 
-        // Salto con ? (opcional)
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        // ----- DOUBLE JUMP LOGIC -----
+        if (Input.GetKeyDown(KeyCode.W))
         {
-            Jump();
+            if (Mathf.Abs(rb.linearVelocity.y) < 0.01f)
+            {
+                rb.AddForce(Vector2.up * jumpForce);
+                doubleJumpUsed = false; // Reset double jump on ground
+            }
+            else if (hasDoubleJump && !doubleJumpUsed)
+            {
+                rb.AddForce(Vector2.up * jumpForce * 2f); // Double jump is 2x force
+                doubleJumpUsed = true;
+                hasDoubleJump = false; // Power-up is consumed
+                if (powerUpSound != null) powerUpSound.Play();
+            }
         }
 
-        // Disparo con Ò (KeyCode.Semicolon en teclado espaÒol)
-        if (Input.GetKey(KeyCode.Semicolon) && Time.time > LastShoot + shootDelay)
+        // Disparo con F
+        if (Input.GetKey(KeyCode.F) && Time.time > LastShoot + shootDelay)
         {
             Shoot();
             LastShoot = Time.time;
         }
-    }
 
-    private void Jump()
-    {
-        if (Mathf.Abs(rb.linearVelocity.y) < 0.01f)
+        // ----- STRONG SHOT TIMER -----
+        if (hasStrongShot && Time.time > strongShotEndTime)
         {
-            rb.AddForce(Vector2.up * jumpForce);
+            hasStrongShot = false;
+            shotForceMultiplier = 1f;
         }
     }
 
     private void Shoot()
     {
-        ShootSound.Play();
-        Vector3 direction;
-        if (transform.localScale.x < 0)
-        {
-            direction = new Vector2(-1, 0);
-        }
-        else
-        {
-            direction = new Vector2(1, 0);
-        }
+        if (ShootSound != null) ShootSound.Play();
+        Vector2 dir = transform.localScale.x < 0 ? Vector2.left : Vector2.right;
+        Vector3 spawnPos = transform.position + (Vector3)dir * 0.28f;
 
         GameObject FireBall = Instantiate(
             FireballPrefab,
-            transform.position + direction * 0.28f,
+            spawnPos,
             Quaternion.identity
         );
-        FireBall.GetComponent<FireballScript>().SetDirection(direction);
+        // Pass the force multiplier to the Fireball
+        FireBall.GetComponent<FireballScript>().SetDirection(dir, shotForceMultiplier);
     }
 
     private void FixedUpdate()
     {
+        // Asigna la velocidad horizontal en tu f√≠sico propio
         rb.linearVelocity = new Vector2(Horizontal, rb.linearVelocity.y);
+    }
+
+    // --- POWER-UP ACTIVATION HELPERS ---
+    public void ActivateDoubleJump()
+    {
+        hasDoubleJump = true;
+        doubleJumpUsed = false;
+    }
+
+    public void ActivateStrongShot(float duration, float multiplier)
+    {
+        hasStrongShot = true;
+        shotForceMultiplier = multiplier;
+        strongShotEndTime = Time.time + duration;
+        if (powerUpSound != null) powerUpSound.Play();
     }
 }

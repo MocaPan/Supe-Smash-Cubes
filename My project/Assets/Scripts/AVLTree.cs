@@ -48,6 +48,7 @@ public class AVLTree : IProgrammingTree<int>
 
     private AVLNode RotateLeft(AVLNode node)
     {
+        // Standard AVL Left Rotation
         AVLNode newRoot = node.right;
         node.right = newRoot.left;
         newRoot.left = node;
@@ -58,6 +59,7 @@ public class AVLTree : IProgrammingTree<int>
 
     private AVLNode RotateRight(AVLNode node)
     {
+        // Standard AVL Right Rotation
         AVLNode newRoot = node.left;
         node.left = newRoot.right;
         newRoot.right = node;
@@ -72,7 +74,7 @@ public class AVLTree : IProgrammingTree<int>
     {
         public int value;
         public AVLNode left, right;
-        private int height = 1;
+        public int height = 1;
 
         public AVLNode(int val)
         {
@@ -97,5 +99,37 @@ public class AVLTree : IProgrammingTree<int>
             if (right != null) children.Add(right);
             return children;
         }
+    }
+
+    public int CountNodes()
+    {
+        return CountNodesRecursive(root);
+    }
+
+    private int CountNodesRecursive(AVLNode node)
+    {
+        if (node == null) return 0;
+        return 1 + CountNodesRecursive(node.left) + CountNodesRecursive(node.right);
+    }
+
+    public int GetHeight()
+    {
+        return GetHeightRecursive(root);
+    }
+
+    private int GetHeightRecursive(AVLNode node)
+    {
+        if (node == null) return 0;
+        return 1 + Mathf.Max(GetHeightRecursive(node.left), GetHeightRecursive(node.right));
+    }
+
+    public int GetRootValue()
+    {
+        return root != null ? root.value : -1;
+    }
+
+    public int GetBalanceFactorRoot()
+    {
+        return root == null ? 0 : root.BalanceFactor;
     }
 }

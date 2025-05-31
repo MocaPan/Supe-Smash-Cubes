@@ -31,7 +31,7 @@ public class BTree : IProgrammingTree<int>
         public List<int> keys = new List<int>();
         public List<BTreeNode> children = new List<BTreeNode>();
         public bool leaf;
-        private int t; // <---- campo agregado para el grado mínimo
+        private int t; // minimum degree
 
         public BTreeNode(bool isLeaf, int t)
         {
@@ -47,7 +47,7 @@ public class BTree : IProgrammingTree<int>
 
             if (leaf)
             {
-                keys.Add(0);
+                keys.Add(0); // Add a dummy value for shifting
                 while (i >= 0 && key < keys[i])
                 {
                     keys[i + 1] = keys[i];
@@ -58,7 +58,6 @@ public class BTree : IProgrammingTree<int>
             else
             {
                 while (i >= 0 && key < keys[i]) i--;
-
                 i++;
                 if (children[i].IsFull)
                 {
@@ -73,6 +72,7 @@ public class BTree : IProgrammingTree<int>
         {
             BTreeNode z = new BTreeNode(y.leaf, t);
 
+            // Copy last t-1 keys of y to z
             for (int j = 0; j < t - 1; j++)
                 z.keys.Add(y.keys[j + t]);
 
@@ -80,12 +80,13 @@ public class BTree : IProgrammingTree<int>
             {
                 for (int j = 0; j < t; j++)
                     z.children.Add(y.children[j + t]);
-                y.children.RemoveRange(t, t);
+                y.children.RemoveRange(t, y.children.Count - t);
             }
 
             y.keys.RemoveRange(t - 1, y.keys.Count - (t - 1));
             children.Insert(i + 1, z);
             keys.Insert(i, y.keys[t - 1]);
+            y.keys.RemoveAt(t - 1); // Remove the median key
         }
 
         public int GetValue() => keys.Count > 0 ? keys[0] : -1;
@@ -94,5 +95,42 @@ public class BTree : IProgrammingTree<int>
         {
             return new List<IProgrammingTreeNode<int>>(children);
         }
+    }
+
+    public int CountKeys()
+    {
+        return CountKeysRecursive(root);
+    }
+    private int CountKeysRecursive(BTreeNode node)
+    {
+        if (node == null) return 0;
+        int sum = node.keys.Count;
+        if (!node.leaf)
+        {
+            foreach (var child in node.children)
+                sum += CountKeysRecursive(child);
+        }
+        return sum;
+    }
+
+    // Number of children of the root
+    public int RootChildrenCount()
+    {
+        return root != null ? root.children.Count : 0;
+    }
+
+    // Returns true if any leaf has exactly 3 keys
+    public bool HasLeafWithThreeKeys()
+    {
+        return HasLeafWithNKeys(root, 3);
+    }
+    private bool HasLeafWithNKeys(BTreeNode node, int n)
+    {
+        if (node == null) return false;
+        if (node.leaf) return node.keys.Count == n;
+        foreach (var child in node.children)
+            if (HasLeafWithNKeys(child, n))
+                return true;
+        return false;
     }
 }
