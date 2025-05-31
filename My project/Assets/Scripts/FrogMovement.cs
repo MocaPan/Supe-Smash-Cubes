@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using CustomPhysics2D;
 
 public class FrogMovement : MonoBehaviour
@@ -13,15 +14,35 @@ public class FrogMovement : MonoBehaviour
     private float LastShoot;
     public float shootDelay;
 
-    // ----- POWER-UP FIELDS -----
     public bool hasDoubleJump = false;
     private bool doubleJumpUsed = false;
-
     public bool hasStrongShot = false;
     private float strongShotEndTime = 0f;
-    public float shotForceMultiplier = 1f; // default is 1
+    public float shotForceMultiplier = 1f;
+    public AudioSource powerUpSound;
 
-    public AudioSource powerUpSound; // Optional: assign in Inspector for feedback
+    private PlayerControls controls;
+    private Vector2 moveInput;
+    private bool jumpQueued = false;
+    private bool shootQueued = false;
+
+    private void Awake()
+    {
+        controls = new PlayerControls();
+
+        controls.Gameplay.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
+        controls.Gameplay.Move.canceled += ctx => moveInput = Vector2.zero;
+        controls.Gameplay.Jump.performed += ctx => jumpQueued = true;
+        controls.Gameplay.Shoot.performed += ctx => shootQueued = true;
+
+        controls.Gameplay.Enable();
+    }
+
+    private void OnDisable()
+    {
+        if (controls != null)
+            controls.Gameplay.Disable();
+    }
 
     void Start()
     {
@@ -31,48 +52,39 @@ public class FrogMovement : MonoBehaviour
 
     void Update()
     {
-        // Movimiento con A/D
-        if (Input.GetKey(KeyCode.LeftArrow))
-            Horizontal = -1.0f * speed;
-        else if (Input.GetKey(KeyCode.RightArrow))
-            Horizontal = 1.0f * speed;
-        else
-            Horizontal = 0.0f;
+        Horizontal = moveInput.x * speed;
 
-        // Voltear sprite
         if (Horizontal < 0.0f)
             transform.localScale = new Vector3(-1, 1, 1);
         else if (Horizontal > 0.0f)
             transform.localScale = new Vector3(1, 1, 1);
 
-        // Animación de correr
         Animator.SetBool("Running", Horizontal != 0.0f);
 
-        // ----- DOUBLE JUMP LOGIC -----
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        if (jumpQueued)
         {
+            jumpQueued = false;
             if (Mathf.Abs(rb.linearVelocity.y) < 0.01f)
             {
                 rb.AddForce(Vector2.up * jumpForce);
-                doubleJumpUsed = false; // Reset double jump on ground
+                doubleJumpUsed = false;
             }
             else if (hasDoubleJump && !doubleJumpUsed)
             {
-                rb.AddForce(Vector2.up * jumpForce * 2f); // Double jump is 2x force
+                rb.AddForce(Vector2.up * jumpForce * 2f);
                 doubleJumpUsed = true;
-                hasDoubleJump = false; // Power-up is consumed
+                hasDoubleJump = false;
                 if (powerUpSound != null) powerUpSound.Play();
             }
         }
 
-        // Disparo con L
-        if (Input.GetKey(KeyCode.L) && Time.time > LastShoot + shootDelay)
+        if (shootQueued && Time.time > LastShoot + shootDelay)
         {
             Shoot();
             LastShoot = Time.time;
         }
+        shootQueued = false;
 
-        // ----- STRONG SHOT TIMER -----
         if (hasStrongShot && Time.time > strongShotEndTime)
         {
             hasStrongShot = false;
@@ -85,29 +97,20 @@ public class FrogMovement : MonoBehaviour
         if (ShootSound != null) ShootSound.Play();
         Vector2 dir = transform.localScale.x < 0 ? Vector2.left : Vector2.right;
         Vector3 spawnPos = transform.position + (Vector3)dir * 0.28f;
-
-        GameObject FireBall = Instantiate(
-            FireballPrefab,
-            spawnPos,
-            Quaternion.identity
-        );
-        // Pass the force multiplier to the Fireball
+        GameObject FireBall = Instantiate(FireballPrefab, spawnPos, Quaternion.identity);
         FireBall.GetComponent<FireballScript>().SetDirection(dir, shotForceMultiplier);
     }
 
     private void FixedUpdate()
     {
-        // Asigna la velocidad horizontal en tu físico propio
         rb.linearVelocity = new Vector2(Horizontal, rb.linearVelocity.y);
     }
 
-    // --- POWER-UP ACTIVATION HELPERS ---
     public void ActivateDoubleJump()
     {
         hasDoubleJump = true;
         doubleJumpUsed = false;
     }
-
     public void ActivateStrongShot(float duration, float multiplier)
     {
         hasStrongShot = true;

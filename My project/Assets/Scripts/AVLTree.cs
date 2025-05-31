@@ -74,7 +74,7 @@ public class AVLTree : IProgrammingTree
         Node x = y.left;
         Node T2 = x.right;
 
-        // Rotación
+        // Rotaciï¿½n
         x.right = y;
         y.left = T2;
 
@@ -90,7 +90,7 @@ public class AVLTree : IProgrammingTree
         Node y = x.right;
         Node T2 = y.left;
 
-        // Rotación
+        // Rotaciï¿½n
         y.left = x;
         x.right = T2;
 
@@ -115,4 +115,32 @@ public class AVLTree : IProgrammingTree
         values.Add(node.value);
         InOrderTraversal(node.right, values);
     }
+    public int CountNodes()
+{
+    return CountNodesRecursive(root);
+}
+    private int CountNodesRecursive(Node node)
+    {
+        if (node == null) return 0;
+        return 1 + CountNodesRecursive(node.left) + CountNodesRecursive(node.right);
+    }
+
+    public int GetHeight()
+    {
+        return GetHeightRecursive(root);
+    }
+    private int GetHeightRecursive(Node node)
+    {
+        if (node == null) return 0;
+        return 1 + Mathf.Max(GetHeightRecursive(node.left), GetHeightRecursive(node.right));
+    }
+
+    public int GetRootValue()
+    {
+        return root != null ? root.value : -1;
+    }
+    public int GetBalanceFactorRoot() {
+        return root == null ? 0 : GetBalance(root);
+    }
+
 }

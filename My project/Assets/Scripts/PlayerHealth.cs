@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using CustomPhysics2D;
 
-
 public class PlayerHealth : MonoBehaviour
 {
     [Header("Score Enemico")]
@@ -86,23 +85,16 @@ public class PlayerHealth : MonoBehaviour
     }
 
     public void TakeDamage(int amount)
+{
+    if (hitSound != null)
     {
-        if (hitSound != null)
-        {
-            hitSound.Play();
-        }
+        hitSound.Play();
+    }
 
-        if (isDead)
-        {
-            return;
-        }
-
-        currentHealth -= amount;
-
-        if (currentHealth < 0)
-        {
-            currentHealth = 0;
-        }
+    if (isDead)
+    {
+        return;
+    }
 
         UpdateHeartsUI();
 
@@ -192,20 +184,20 @@ public class PlayerHealth : MonoBehaviour
             heartsFull[i].enabled = (i < currentHealth);
         }
     }
-
-    void OnMyCollisionEnter(MyCollider2D other)
+   /* void OnMyCollisionEnter(MyCollider2D other)
     {
         if (other.CompareTag("Bullet"))
         {
             TakeDamage(1);
         }
-    }
+    }*/
 
-    void OnMyTriggerEnter(MyCollider2D other)
+   void OnMyTriggerEnter(MyCollider2D other)
+{
+    // Only killzones cause damage now
+    if (other.CompareTag("KillZone"))
     {
-        if (other.CompareTag("KillZone"))
-        {
-            TakeDamage(currentHealth);
-        }
+        TakeDamage(currentHealth);
     }
+}
 }

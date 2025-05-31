@@ -40,26 +40,25 @@ public class FireballScript : MonoBehaviour
 
     // Use custom physics event!
     void OnMyCollisionEnter(MyCollider2D other)
+{
+    // Only push MaskGuy or FrogMovement
+    var maskGuy = other.GetComponent<MaskGuy>();
+    var frog = other.GetComponent<FrogMovement>();
+    var playerHealth = other.GetComponent<PlayerHealth>();
+    
+    if ((maskGuy != null || frog != null) && !hasHit)
     {
-        // Only push MaskGuy or FrogMovement (no damage)
-        var maskGuy = other.GetComponent<MaskGuy>();
-        var frog = other.GetComponent<FrogMovement>();
-        if ((maskGuy != null || frog != null) && !hasHit)
+        var hitRb = other.GetComponent<MyRigidbody2D>();
+        if (hitRb != null)
         {
-            var hitRb = other.GetComponent<MyRigidbody2D>();
-            if (hitRb != null)
-            {
-                // Push using base force * multiplier, instant impulse
-                Vector2 push = direction.normalized * basePushForce * forceMultiplier;
-                hitRb.AddForce(push);
-
-                // Optionally, play a sound or effect here
-
-                hasHit = true;
-            }
+            // Apply push force regardless of shield
+            Vector2 push = direction.normalized * basePushForce * forceMultiplier;
+            hitRb.AddForce(push);
+            hasHit = true;
         }
-        DestroyFireball();
     }
+    DestroyFireball();
+}
 
     private void DestroyFireball()
     {
