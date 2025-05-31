@@ -3,57 +3,47 @@ using UnityEngine;
 
 public class NumberCollector : MonoBehaviour
 {
-    public IProgrammingTree<int> myTree;      // Asigna en el Inspector o por código
-    public Score myScore;                // Asigna en el Inspector o por código
-    public ChallengeManager challengeManager; // Referencia global
+    public int playerId = 1; // Asigna 1 o 2 en el Inspector según el jugador
     public List<int> collectedNumbers = new List<int>();
     public AudioSource audioSource;
 
-    public PlayerTreeHandler playerTreeHandler;
+    public TreeManager treeManager; // Arrástralo en el Inspector (TreeManagerObject)
 
     public void CollectNumber(int number)
     {
-        if (playerTreeHandler != null)
-        {
-            playerTreeHandler.AddNumber(number);
-        }
-        else
-        {
-            Debug.LogWarning("PlayerTreeHandler no está asignado en NumberCollector.");
-            return;
-        }
-
         collectedNumbers.Add(number);
-        Debug.Log($"Número recogido por {gameObject.name}: {number}");
+        Debug.Log($"Número recogido por Jugador {playerId}: {number}");
 
         if (audioSource != null)
         {
             audioSource.Play();
         }
 
-
-        if (playerTreeHandler != null) // Insertar número en el árbol del jugador
+        if (treeManager != null)
         {
-            playerTreeHandler.AddNumber(number);
+            treeManager.InsertNumberForPlayer(number, playerId); // Llama al árbol correcto
         }
         else
         {
-            Debug.LogWarning("PlayerTreeHandler no está asignado en NumberCollector.");
+            Debug.LogWarning("TreeManager no asignado en NumberCollector");
         }
-
-        // Si necesitas checar el reto, descomenta y adapta esta sección:
-        /*
-        if (challengeManager != null)
-        {
-            bool completed = challengeManager.OnPlayerInsertedNumber(myTree, myScore);
-
-            if (completed)
-            {
-                Debug.Log($"{gameObject.name} completó el reto: {challengeManager.challengeDescription}");
-                // Aquí podrías activar un power-up, mostrar un mensaje, etc.
-            }
-        }
-        */
     }
 }
+
+
+// Si necesitas checar el reto, descomenta y adapta esta sección:
+/*
+if (challengeManager != null)
+{
+    bool completed = challengeManager.OnPlayerInsertedNumber(myTree, myScore);
+
+    if (completed)
+    {
+        Debug.Log($"{gameObject.name} completó el reto: {challengeManager.challengeDescription}");
+        // Aquí podrías activar un power-up, mostrar un mensaje, etc.
+    }
+}
+*/
+
+
 

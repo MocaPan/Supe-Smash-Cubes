@@ -7,26 +7,29 @@ public class NumberBall : MonoBehaviour
 
     void Start()
     {
-        
-        TextMeshPro tmp = GetComponentInChildren<TextMeshPro>();// Obtener el número desde el TextMeshPro
+        // Buscar el componente TextMeshPro en los hijos (usualmente en el canvas del prefab)
+        TextMeshPro tmp = GetComponentInChildren<TextMeshPro>();
+
         if (tmp != null && int.TryParse(tmp.text, out int parsed))
         {
             myNumber = parsed;
         }
         else
         {
-            Debug.LogWarning("No se pudo leer el número de la bola.");
+            Debug.LogWarning($"No se pudo leer el número de la bola en {gameObject.name}.");
         }
     }
 
+    // Método personalizado de colisión, según tu sistema de físicas
     void OnMyCollisionEnter(CustomPhysics2D.MyCollider2D other)
     {
-        
-        NumberCollector collector = other.GetComponent<NumberCollector>();// Verifica si colisiona con el jugador
+        // Verificar si el otro objeto tiene el componente NumberCollector
+        NumberCollector collector = other.GetComponent<NumberCollector>();
+
         if (collector != null)
         {
-            collector.CollectNumber(myNumber);
-            Destroy(gameObject); // Destruye la bola
+            collector.CollectNumber(myNumber); // Pasar el número
+            Destroy(gameObject); // Eliminar la bola
         }
     }
 }

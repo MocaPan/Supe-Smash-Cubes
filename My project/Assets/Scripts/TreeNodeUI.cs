@@ -3,11 +3,10 @@ using UnityEngine;
 
 public class TreeNodeUI : MonoBehaviour
 {
-    public TMP_Text numberText;
+    public TMP_Text valueText;
 
     public void SetValue(int value)
     {
-        numberText.text = value.ToString();
+        valueText.text = value.ToString();
     }
 }
-

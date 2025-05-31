@@ -10,11 +10,13 @@ public class TreeVisualizer : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        Debug.Log("TreeVisualizer inicializado");
     }
 
     public void Visualize(IProgrammingTree<int> tree, Transform origin)
     {
         ClearPrevious(origin);
+
 
         if (tree == null || tree.GetRoot() == null) return;
 
