@@ -8,8 +8,8 @@ public class PlayerHealth : MonoBehaviour
     [Tooltip("Referencia de score del enemigo")]
     [SerializeField] private Score playerScore;
 
-    [Header("Configuración de Vida")]
-    [Tooltip("Puntos de vida máximos")]
+    [Header("Configuraciï¿½n de Vida")]
+    [Tooltip("Puntos de vida mï¿½ximos")]
     public int maxHealth = 4;
 
     [Header("Respawn")]
@@ -17,11 +17,11 @@ public class PlayerHealth : MonoBehaviour
     public float respawnDelay = 1f;
     [Tooltip("Puntos de respawn, asigna en orden")]
     public Transform[] respawnPoints;
-    [Tooltip("Índice de este jugador en el array")]
+    [Tooltip("ï¿½ndice de este jugador en el array")]
     private int playerIndex = 0;
-    public AudioSource hitSound; // Sonido de daño (opcional)
+    public AudioSource hitSound; // Sonido de daï¿½o (opcional)
 
-    [Header("Sonido y Animación")]
+    [Header("Sonido y Animaciï¿½n")]
     [Tooltip("AudioSource que reproduce el sonido de muerte")]
     public AudioSource deathSound;
     [Tooltip("Animator con el trigger de muerte")]
@@ -29,15 +29,18 @@ public class PlayerHealth : MonoBehaviour
     [Tooltip("Nombre del trigger de muerte en el Animator")]
     public string deathTrigger = "Die";
 
-    [Header("UI de Corazones (llenos y vacíos)")]
-    [Tooltip("Imágenes de corazones vacíos (fondo)")]
-    public Image[] heartsEmpty;   // tamaño = maxHealth
-    [Tooltip("Imágenes de corazones llenos (encima)")]
-    public Image[] heartsFull;    // tamaño = maxHealth
+    [Header("UI de Corazones (llenos y vacï¿½os)")]
+    [Tooltip("Imï¿½genes de corazones vacï¿½os (fondo)")]
+    public Image[] heartsEmpty;   // tamaï¿½o = maxHealth
+    [Tooltip("Imï¿½genes de corazones llenos (encima)")]
+    public Image[] heartsFull;    // tamaï¿½o = maxHealth
 
     private int currentHealth;
     private bool isDead;
     private float respawnTimer;
+    public bool isShielded = false;
+    public float shieldEndTime = 0f;
+    public AudioSource shieldActivateSound; // Optional
 
     void Start()
     {
@@ -48,7 +51,7 @@ public class PlayerHealth : MonoBehaviour
             animator = GetComponent<Animator>();
         }
 
-        // Validación array de respawn
+        // Validaciï¿½n array de respawn
         if (respawnPoints == null || respawnPoints.Length == 0)
         {
             Debug.LogWarning(name + ": no hay puntos de respawn asignados");
@@ -72,26 +75,26 @@ public class PlayerHealth : MonoBehaviour
             ChooseRandomRespawnPoint();
             Respawn();
         }
+        // Handle shield expiration
+        if (isShielded && Time.time > shieldEndTime)
+        {
+            isShielded = false;
+            // Optional: visual/audio feedback
+        }
+
     }
 
     public void TakeDamage(int amount)
+{
+    if (hitSound != null)
     {
-        if (hitSound != null)
-        {
-            hitSound.Play();
-        }
+        hitSound.Play();
+    }
 
-        if (isDead)
-        {
-            return;
-        }
-
-        currentHealth -= amount;
-
-        if (currentHealth < 0)
-        {
-            currentHealth = 0;
-        }
+    if (isDead)
+    {
+        return;
+    }
 
         UpdateHeartsUI();
 
@@ -99,6 +102,13 @@ public class PlayerHealth : MonoBehaviour
         {
             Die();
         }
+        
+        if (isShielded)
+        {
+                // Ignore damage while shielded
+            return;
+        }
+
     }
 
     private void Die()
@@ -166,28 +176,28 @@ public class PlayerHealth : MonoBehaviour
 
         for (int i = 0; i < count; i++)
         {
-            // El corazón vacío siempre está activo
+            // El corazï¿½n vacï¿½o siempre estï¿½ activo
             heartsEmpty[i].enabled = true;
 
-            // Si el índice está por debajo de la vida actual, mostramos el corazón lleno
-            // en caso contrario lo ocultamos, dejando ver el vacío de fondo
+            // Si el ï¿½ndice estï¿½ por debajo de la vida actual, mostramos el corazï¿½n lleno
+            // en caso contrario lo ocultamos, dejando ver el vacï¿½o de fondo
             heartsFull[i].enabled = (i < currentHealth);
         }
     }
-
-    void OnMyCollisionEnter(MyCollider2D other)
+   /* void OnMyCollisionEnter(MyCollider2D other)
     {
         if (other.CompareTag("Bullet"))
         {
             TakeDamage(1);
         }
-    }
+    }*/
 
-    void OnMyTriggerEnter(MyCollider2D other)
+   void OnMyTriggerEnter(MyCollider2D other)
+{
+    // Only killzones cause damage now
+    if (other.CompareTag("KillZone"))
     {
-        if (other.CompareTag("KillZone"))
-        {
-            TakeDamage(currentHealth);
-        }
+        TakeDamage(currentHealth);
     }
+}
 }
