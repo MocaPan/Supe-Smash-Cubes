@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class NumberCollector : MonoBehaviour
 {
-    public IProgrammingTree myTree;      // Asigna en el Inspector o por código
+    public IProgrammingTree<int> myTree;      // Asigna en el Inspector o por código
     public Score myScore;                // Asigna en el Inspector o por código
     public ChallengeManager challengeManager; // Referencia global
     public List<int> collectedNumbers = new List<int>();
@@ -13,7 +13,16 @@ public class NumberCollector : MonoBehaviour
 
     public void CollectNumber(int number)
     {
-        myTree.Insert(number);
+        if (playerTreeHandler != null)
+        {
+            playerTreeHandler.AddNumber(number);
+        }
+        else
+        {
+            Debug.LogWarning("PlayerTreeHandler no está asignado en NumberCollector.");
+            return;
+        }
+
         collectedNumbers.Add(number);
         Debug.Log($"Número recogido por {gameObject.name}: {number}");
 

@@ -4,14 +4,14 @@ using System.Collections.Generic;
 
 public class ChallengeManager : MonoBehaviour
 {
-    public IProgrammingTree playerTree;
+    public IProgrammingTree<int> playerTree;
     public Score playerScore;
     public int pointsPerChallenge = 100;
 
     // Lista de retos (puedes expandir)
     private List<Action> challengeSetters;
     private System.Random random = new System.Random();
-    public Func<IProgrammingTree, bool> currentChallenge;
+    public Func<IProgrammingTree<int>, bool> currentChallenge;
     public string challengeDescription;
 
     private void Awake()
@@ -36,7 +36,7 @@ public class ChallengeManager : MonoBehaviour
     }
 
     // Llama esto cada vez que el jugador inserta un número
-    public bool OnPlayerInsertedNumber(IProgrammingTree tree, Score score)
+    public bool OnPlayerInsertedNumber(IProgrammingTree<int> tree, Score score)
     {
         if (currentChallenge != null && currentChallenge(tree))
         {
@@ -60,19 +60,19 @@ public class ChallengeManager : MonoBehaviour
     public void SetBSTChallenge_5Nodes()
     {
         challengeDescription = "Construye un BST con exactamente 5 nodos";
-        currentChallenge = (tree) => (tree as BST)?.CountNodes() == 5;
+        currentChallenge = (tree) => (tree as BSTTree)?.CountNodes() == 5;
     }
 
     public void SetBSTChallenge_Height3()
     {
         challengeDescription = "Construye un BST de altura exactamente 3";
-        currentChallenge = (tree) => (tree as BST)?.GetHeight() == 3;
+        currentChallenge = (tree) => (tree as BSTTree)?.GetHeight() == 3;
     }
 
     public void SetBSTChallenge_RootValue(int value)
     {
         challengeDescription = $"La raíz del BST debe ser igual a {value}";
-        currentChallenge = (tree) => (tree as BST)?.GetRootValue() == value;
+        currentChallenge = (tree) => (tree as BSTTree)?.GetRootValue() == value;
     }
 
     public void SetAVLChallenge_6Nodes()

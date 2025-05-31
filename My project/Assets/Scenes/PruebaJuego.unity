@@ -13319,18 +13319,5 @@ SceneRoots:
   - {fileID: 1688937426}
   - {fileID: 1045674342}
 # TreeVisualizer GameObject
---- !u!1 &1183261594
-GameObject:
-  ...
-  m_Component:
-    - component: {fileID: 1183261595}
-  ...
 
-# PowerUpSpawner GameObject
---- !u!1 &1191231661
-GameObject:
-  ...
-  m_Component:
-    - component: {fileID: 1191231663}
-    - component: {fileID: 1191231662}
-  ...
+
