@@ -1,104 +1,98 @@
 using System.Collections.Generic;
 
-public class BTree : IProgrammingTree
+public class BTree : IProgrammingTree<int>
 {
-    private class Node
+    private int T;
+    private BTreeNode root;
+
+    public BTree(int t)
     {
-        public List<int> keys = new List<int>();
-        public List<Node> children = new List<Node>();
-        public bool isLeaf = true;
-
-        public Node() { }
+        T = t;
+        root = new BTreeNode(true, t);
     }
-
-    private Node root = new Node();
-    private int t = 2; // Grado mínimo del B-Tree
 
     public void Insert(int value)
     {
-        if (root.keys.Count == 2 * t - 1)
+        if (root.IsFull)
         {
-            Node newRoot = new Node { isLeaf = false };
+            BTreeNode newRoot = new BTreeNode(false, T);
             newRoot.children.Add(root);
-            SplitChild(newRoot, 0);
+            newRoot.SplitChild(0, root);
             root = newRoot;
         }
 
-        InsertNonFull(root, value);
+        root.InsertNonFull(value);
     }
 
-    private void InsertNonFull(Node node, int value)
-    {
-        int i = node.keys.Count - 1;
+    public IProgrammingTreeNode<int> GetRoot() => root;
 
-        if (node.isLeaf)
+    public class BTreeNode : IProgrammingTreeNode<int>
+    {
+        public List<int> keys = new List<int>();
+        public List<BTreeNode> children = new List<BTreeNode>();
+        public bool leaf;
+        private int t; // <---- campo agregado para el grado mínimo
+
+        public BTreeNode(bool isLeaf, int t)
         {
-            node.keys.Add(0); // Espacio para el nuevo valor
-            while (i >= 0 && value < node.keys[i])
+            leaf = isLeaf;
+            this.t = t;
+        }
+
+        public bool IsFull => keys.Count == 2 * t - 1;
+
+        public void InsertNonFull(int key)
+        {
+            int i = keys.Count - 1;
+
+            if (leaf)
             {
-                node.keys[i + 1] = node.keys[i];
-                i--;
+                keys.Add(0);
+                while (i >= 0 && key < keys[i])
+                {
+                    keys[i + 1] = keys[i];
+                    i--;
+                }
+                keys[i + 1] = key;
             }
-            node.keys[i + 1] = value;
-        }
-        else
-        {
-            while (i >= 0 && value < node.keys[i])
-                i--;
-
-            i++;
-            if (node.children[i].keys.Count == 2 * t - 1)
+            else
             {
-                SplitChild(node, i);
-                if (value > node.keys[i])
-                    i++;
+                while (i >= 0 && key < keys[i]) i--;
+
+                i++;
+                if (children[i].IsFull)
+                {
+                    SplitChild(i, children[i]);
+                    if (key > keys[i]) i++;
+                }
+                children[i].InsertNonFull(key);
+            }
+        }
+
+        public void SplitChild(int i, BTreeNode y)
+        {
+            BTreeNode z = new BTreeNode(y.leaf, t);
+
+            for (int j = 0; j < t - 1; j++)
+                z.keys.Add(y.keys[j + t]);
+
+            if (!y.leaf)
+            {
+                for (int j = 0; j < t; j++)
+                    z.children.Add(y.children[j + t]);
+                y.children.RemoveRange(t, t);
             }
 
-            InsertNonFull(node.children[i], value);
+            y.keys.RemoveRange(t - 1, y.keys.Count - (t - 1));
+            children.Insert(i + 1, z);
+            keys.Insert(i, y.keys[t - 1]);
         }
-    }
 
-    private void SplitChild(Node parent, int index)
-    {
-        Node fullChild = parent.children[index];
-        Node newChild = new Node { isLeaf = fullChild.isLeaf };
+        public int GetValue() => keys.Count > 0 ? keys[0] : -1;
 
-        parent.keys.Insert(index, fullChild.keys[t - 1]);
-        parent.children.Insert(index + 1, newChild);
-
-        // Copiar la mitad derecha de las claves y niños
-        for (int j = 0; j < t - 1; j++)
-            newChild.keys.Add(fullChild.keys[j + t]);
-
-        if (!fullChild.isLeaf)
+        public List<IProgrammingTreeNode<int>> GetChildren()
         {
-            for (int j = 0; j < t; j++)
-                newChild.children.Add(fullChild.children[j + t]);
+            return new List<IProgrammingTreeNode<int>>(children);
         }
-
-        // Reducir el tamaño del nodo dividido
-        fullChild.keys.RemoveRange(t - 1, fullChild.keys.Count - (t - 1));
-        if (!fullChild.isLeaf)
-            fullChild.children.RemoveRange(t, fullChild.children.Count - t);
-    }
-
-    public List<int> GetValues()
-    {
-        List<int> values = new List<int>();
-        Traverse(root, values);
-        return values;
-    }
-
-    private void Traverse(Node node, List<int> values)
-    {
-        for (int i = 0; i < node.keys.Count; i++)
-        {
-            if (!node.isLeaf)
-                Traverse(node.children[i], values);
-            values.Add(node.keys[i]);
-        }
-
-        if (!node.isLeaf)
-            Traverse(node.children[node.keys.Count], values);
     }
 }
