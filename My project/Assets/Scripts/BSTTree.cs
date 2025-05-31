@@ -47,7 +47,7 @@ public class BSTTree : IProgrammingTree<int>
     {
         return CountNodesRecursive(root);
     }
-    private int CountNodesRecursive(Node node)
+    private int CountNodesRecursive(BSTNode node)
     {
         if (node == null) return 0;
         return 1 + CountNodesRecursive(node.left) + CountNodesRecursive(node.right);
@@ -57,7 +57,7 @@ public class BSTTree : IProgrammingTree<int>
     {
         return GetHeightRecursive(root);
     }
-    private int GetHeightRecursive(Node node) {
+    private int GetHeightRecursive(BSTNode node) {
         if (node == null) return 0;
         return 1 + Mathf.Max(GetHeightRecursive(node.left), GetHeightRecursive(node.right));
 

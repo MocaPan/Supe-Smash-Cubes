@@ -1,4 +1,3 @@
-using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 
 public class PlayerTreeHandler : MonoBehaviour
@@ -23,17 +22,19 @@ public class PlayerTreeHandler : MonoBehaviour
         }
     }
 
+    public Transform treeOrigin;
     public void AddNumber(int number)
     {
         tree.Insert(number);
+        Debug.Log($"Insertado número {number} en el árbol de {gameObject.name}");
 
         if (TreeVisualizer.Instance != null)
         {
-            TreeVisualizer.Instance.Visualize(tree, this.transform);
+            TreeVisualizer.Instance.Visualize(tree, treeOrigin);
         }
-        else
+        else 
         {
-            Debug.LogWarning("TreeVisualizer.Instance no está asignado en la escena.");
+            Debug.LogWarning("TreeVisualizer.Instance no está asignado.");
         }
     }
 }
