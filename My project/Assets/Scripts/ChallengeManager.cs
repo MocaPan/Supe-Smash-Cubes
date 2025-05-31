@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using TMPro;
 
 public class ChallengeManager : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class ChallengeManager : MonoBehaviour
     private System.Random random = new System.Random();
     public Func<IProgrammingTree<int>, bool> currentChallenge;
     public string challengeDescription;
+    public TMP_Text challengeUIText;
 
     private void Awake()
     {
@@ -54,6 +56,7 @@ public class ChallengeManager : MonoBehaviour
         int idx = random.Next(challengeSetters.Count);
         challengeSetters[idx]();
         Debug.Log("Nuevo reto: " + challengeDescription);
+        if (challengeUIText != null) challengeUIText.text = challengeDescription;
     }
 
     // ======================== RETOS ========================

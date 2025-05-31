@@ -76,7 +76,7 @@ public class PlayerHealth : MonoBehaviour
             Respawn();
         }
         // Handle shield expiration
-        if (isShielded && Time.time > shieldEndTime)
+        if (isShielded && Time.time >= shieldEndTime)
         {
             isShielded = false;
             // Optional: visual/audio feedback

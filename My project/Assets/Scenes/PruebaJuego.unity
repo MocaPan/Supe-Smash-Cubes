@@ -967,6 +967,8 @@ MonoBehaviour:
   - {fileID: 290156746}
   - {fileID: 1247886889}
   - {fileID: 653389292}
+  currentHealth: 0
+  isDead: 0
   isShielded: 0
   shieldEndTime: 0
   shieldActivateSound: {fileID: 0}
@@ -982,6 +984,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec659ca1d9d0734428a0972ec66f210d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myScore: {fileID: 0}
+  challengeManager: {fileID: 0}
   collectedNumbers: 
   audioSource: {fileID: 2065571291}
   playerTreeHandler: {fileID: 278214514}
@@ -2907,6 +2911,8 @@ MonoBehaviour:
   - {fileID: 1658124773}
   - {fileID: 1512783559}
   - {fileID: 1947493344}
+  currentHealth: 0
+  isDead: 0
   isShielded: 0
   shieldEndTime: 0
   shieldActivateSound: {fileID: 0}
@@ -2922,6 +2928,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec659ca1d9d0734428a0972ec66f210d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myScore: {fileID: 0}
+  challengeManager: {fileID: 0}
   collectedNumbers: 
   audioSource: {fileID: 2065571291}
   playerTreeHandler: {fileID: 817532753}
@@ -4420,7 +4428,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1191231661
 GameObject:
   m_ObjectHideFlags: 0
@@ -4454,7 +4463,7 @@ MonoBehaviour:
   - {fileID: 9134709292359592989, guid: 296a9918ceaad9343bb9d4b30d1c062b, type: 3}
   - {fileID: 7049876647883344667, guid: e7db263141a0d7c4b9ffd612b0c60792, type: 3}
   - {fileID: 5941363022368500725, guid: 9689f0efa7961744b98ca646f24c2f34, type: 3}
-  spawnInterval: 3
+  spawnInterval: 20
   spawnReferencePoint: {fileID: 516862444}
   leftBound: {fileID: 1732334890}
   rightBound: {fileID: 971308169}
@@ -4468,10 +4477,6 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 413.79385, y: 204.63715, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13197,6 +13202,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 338685541}
     m_Modifications:
+    - target: {fileID: 4537126081521864547, guid: 1c494147c105c4d49a8546dc4067d160, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6423144066545678992, guid: 1c494147c105c4d49a8546dc4067d160, type: 3}
       propertyPath: m_text
       value: 
@@ -13318,6 +13327,5 @@ SceneRoots:
   - {fileID: 1041160415}
   - {fileID: 1688937426}
   - {fileID: 1045674342}
-# TreeVisualizer GameObject
-
-
+  - {fileID: 1183261595}
+  - {fileID: 1191231663}
