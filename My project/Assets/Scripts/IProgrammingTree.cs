@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-public interface IProgrammingTree
+public interface IProgrammingTree<T>
 {
-    void Insert(int value);
-    List<int> GetValues(); 
+    IProgrammingTreeNode<T> GetRoot();
+    void Insert(T value);
 }

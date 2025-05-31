@@ -1,26 +1,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BST : IProgrammingTree
+public class BSTTree : IProgrammingTree<int>
 {
-    private class Node
-    {
-        public int value;
-        public Node left, right;
-        public Node(int value) => this.value = value;
-    }
-
-    private Node root;
+    private BSTNode root;
 
     public void Insert(int value)
     {
         root = InsertRecursive(root, value);
     }
 
-    private Node InsertRecursive(Node node, int value)
+    private BSTNode InsertRecursive(BSTNode node, int value)
     {
-        if (node == null)
-            return new Node(value);
+        if (node == null) return new BSTNode(value);
         if (value < node.value)
             node.left = InsertRecursive(node.left, value);
         else
@@ -28,19 +20,27 @@ public class BST : IProgrammingTree
         return node;
     }
 
-    public List<int> GetValues()
-    {
-        List<int> values = new List<int>();
-        InOrderTraversal(root, values);
-        return values;
-    }
+    public IProgrammingTreeNode<int> GetRoot() => root;
 
-    private void InOrderTraversal(Node node, List<int> values)
+    public class BSTNode : IProgrammingTreeNode<int>
     {
-        if (node == null) return;
-        InOrderTraversal(node.left, values);
-        values.Add(node.value);
-        InOrderTraversal(node.right, values);
+        public int value;
+        public BSTNode left, right;
+
+        public BSTNode(int val)
+        {
+            value = val;
+        }
+
+        public int GetValue() => value;
+
+        public List<IProgrammingTreeNode<int>> GetChildren()
+        {
+            var children = new List<IProgrammingTreeNode<int>>();
+            if (left != null) children.Add(left);
+            if (right != null) children.Add(right);
+            return children;
+        }
     }
     // BSTTree.cs
     public int CountNodes()

@@ -780,6 +780,7 @@ GameObject:
   - component: {fileID: 278214510}
   - component: {fileID: 278214511}
   - component: {fileID: 278214513}
+  - component: {fileID: 278214514}
   m_Layer: 0
   m_Name: Frog
   m_TagString: Player
@@ -983,6 +984,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   collectedNumbers: 
   audioSource: {fileID: 2065571291}
+--- !u!114 &278214514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 278214503}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db63d5190fb21a549b0a7cf246cf761c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectedTreeType: 0
 --- !u!1 &290156744
 GameObject:
   m_ObjectHideFlags: 0
@@ -2706,6 +2720,7 @@ GameObject:
   - component: {fileID: 817532749}
   - component: {fileID: 817532750}
   - component: {fileID: 817532752}
+  - component: {fileID: 817532753}
   m_Layer: 0
   m_Name: Mask
   m_TagString: Player
@@ -2909,6 +2924,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   collectedNumbers: 
   audioSource: {fileID: 2065571291}
+--- !u!114 &817532753
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 817532742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db63d5190fb21a549b0a7cf246cf761c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectedTreeType: 0
 --- !u!1 &818680603
 GameObject:
   m_ObjectHideFlags: 0
