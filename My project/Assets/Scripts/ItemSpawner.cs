@@ -34,7 +34,7 @@ public class ItemSpawner : MonoBehaviour
         GameObject newItem = Instantiate(itemPrefab, spawnPos, Quaternion.identity);
 
         
-        TextMeshPro tmp = newItem.GetComponentInChildren<TextMeshPro>();// Asignar número al texto
+        TextMeshPro tmp = newItem.GetComponentInChildren<TextMeshPro>();// Asignar nï¿½mero al texto
         if (tmp != null)
         {
             tmp.text = number.ToString();
@@ -46,7 +46,7 @@ public class ItemSpawner : MonoBehaviour
             Debug.LogWarning("El prefab no tiene un TextMeshPro hijo.");
         }
 
-        // Física personalizada
+        // Fï¿½sica personalizada
         CustomPhysics2D.MyRigidbody2D rb = newItem.GetComponent<CustomPhysics2D.MyRigidbody2D>();
         if (rb != null)
         {
