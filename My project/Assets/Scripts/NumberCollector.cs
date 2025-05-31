@@ -6,7 +6,7 @@ public class NumberCollector : MonoBehaviour
     public List<int> collectedNumbers = new List<int>();
     public AudioSource audioSource;
 
-    public TreeManager treeManager; // ← Añade esta referencia
+    public PlayerTreeHandler playerTreeHandler;
 
     public void CollectNumber(int number)
     {
@@ -18,9 +18,14 @@ public class NumberCollector : MonoBehaviour
             audioSource.Play();
         }
 
-        if (treeManager != null)
+        
+        if (playerTreeHandler != null) // Insertar número en el árbol del jugador
         {
-            treeManager.InsertNumber(number); // ← Aquí se inserta en el árbol y se visualiza
+            playerTreeHandler.AddNumber(number);
+        }
+        else
+        {
+            Debug.LogWarning("PlayerTreeHandler no está asignado en NumberCollector.");
         }
     }
 }
